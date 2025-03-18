@@ -1,0 +1,20 @@
+name: Publish to NuGet
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - build/**
+      - LICENSE
+      - README.md
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Pack
+        run: dotnet pack -c Release -o .
+      - name: Publish
+        run: dotnet nuget push "*.nupkg" --api-key "${{ secrets.NUGET_API_KEY }}" --source "https://api.nuget.org/v3/index.json"

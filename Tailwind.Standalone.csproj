@@ -2,10 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    
+
+    <!-- Don't build an assembly since we don't have any code -->
+    <NoBuild>true</NoBuild>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
+
     <Authors>Marshal Hayes</Authors>
     <PackageId>MarshalHayes.Tailwind.Standalone</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <Description>Use the Tailwind Standalone CLI the right way</Description>
     
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
