@@ -10,7 +10,7 @@
 
     <Authors>Marshal Hayes</Authors>
     <PackageId>MarshalHayes.Tailwind.Standalone</PackageId>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <Description>Use the Tailwind Standalone CLI the right way</Description>
     
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
