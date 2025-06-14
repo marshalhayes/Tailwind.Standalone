@@ -68,14 +68,20 @@
 
       <TailwindDownloadUrl Condition="'$(TailwindDownloadUrl)' == '' And $(TailwindVersion) != 'latest'">https://github.com/tailwindlabs/tailwindcss/releases/download/$(TailwindVersion)/$(TailwindReleaseName)</TailwindDownloadUrl>
       <TailwindDownloadUrl Condition="'$(TailwindDownloadUrl)' == '' And $(TailwindVersion) == 'latest'">https://github.com/tailwindlabs/tailwindcss/releases/latest/download/$(TailwindReleaseName)</TailwindDownloadUrl>
+
+      <TailwindDestinationFolder>$([System.IO.Path]::Combine('$(TailwindDownloadPath)', 'Tailwind', '$(TailwindVersion)'))</TailwindDestinationFolder>
+
+      <TailwindCliPath>$([System.IO.Path]::Combine('$(TailwindDestinationFolder)', '$(TailwindReleaseName)'))</TailwindCliPath>
     </PropertyGroup>
 
-    <!-- Download the file -->
-    <DownloadFile DestinationFolder="$([System.IO.Path]::Combine('$(TailwindDownloadPath)', 'Tailwind', '$(TailwindVersion)'))"
+    <!-- Download the file if it hasn't been already -->
+    <!-- Note: Using latest will always reach out to GitHub to see if a new version is available -->
+    <DownloadFile DestinationFolder="$(TailwindDestinationFolder)"
                   DestinationFileName="$(TailwindReleaseName)"
                   SourceUrl="$(TailwindDownloadUrl)"
                   SkipUnchangedFiles="true"
-                  Retries="3">
+                  Retries="3"
+                  Condition="'$(TailwindVersion)' == 'latest' Or !Exists('$(TailwindCliPath)')">
       <Output TaskParameter="DownloadedFile" PropertyName="TailwindCliPath"/>
     </DownloadFile>
 
