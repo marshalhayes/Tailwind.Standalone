@@ -110,4 +110,9 @@
 
     <Exec Command="$(TailwindBuildCommand)"/>
   </Target>
+
+  <!-- Delete the output stylesheet when cleaning the project -->
+  <Target Name="CleanTailwindOutput" AfterTargets="Clean">
+    <Delete Files="$(TailwindOutputStyleSheetPath)" Condition="Exists('$(TailwindOutputStyleSheetPath)')" />
+  </Target>
 </Project>
