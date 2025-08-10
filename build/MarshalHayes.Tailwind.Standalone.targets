@@ -113,6 +113,6 @@
 
   <!-- Delete the output stylesheet when cleaning the project -->
   <Target Name="CleanTailwindOutput" AfterTargets="Clean">
-    <Delete Files="$(TailwindOutputStyleSheetPath)" Condition="Exists('$(TailwindOutputStyleSheetPath)')" />
+    <Delete Files="$(TailwindOutputStyleSheetPath)" />
   </Target>
 </Project>
