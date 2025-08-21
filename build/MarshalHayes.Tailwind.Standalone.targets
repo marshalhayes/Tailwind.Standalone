@@ -100,6 +100,7 @@
       <TailwindCliPath>$([MSBuild]::NormalizePath('$(TailwindCliPath)'))</TailwindCliPath>
       <TailwindInputStyleSheetPath>$([MSBuild]::NormalizePath('$(TailwindInputStyleSheetPath)'))</TailwindInputStyleSheetPath>
       <TailwindOutputStyleSheetPath>$([MSBuild]::NormalizePath('$(TailwindOutputStyleSheetPath)'))</TailwindOutputStyleSheetPath>
+      <TailwindOutputSourceMapPath Condition="'$(TailwindOutputSourceMapPath)' != ''">$([MSBuild]::NormalizePath('$(TailwindOutputSourceMapPath)'))</TailwindOutputSourceMapPath>
 
       <TailwindBuildCommand>"$(TailwindCliPath)" -i "$(TailwindInputStyleSheetPath)" -o "$(TailwindOutputStyleSheetPath)"</TailwindBuildCommand>
 
