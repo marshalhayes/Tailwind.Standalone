@@ -7,6 +7,7 @@
   <!-- TailwindOptimizeOutputStyleSheet: Whether to optimize the output stylesheet. This property is optional, and defaults to false. -->
   <!-- TailwindMinifyOutputStyleSheet: Whether to minify the output stylesheet. This property is optional, and defaults to false when Configuration is Debug, and true when Configuration is Release. -->
   <!-- TailwindGenerateSourceMap: Whether to generate a source map for the output stylesheet. This property is optional, and defaults to true when Configuration is Debug, and false when Configuration is Release. -->
+  <!-- TailwindOutputSourceMapPath: The path to where to write the generated source map file. This property is optional, and when not specified, inline source maps are generated. Requires TailwindGenerateSourceMap to be true. -->
   <!-- TailwindDownloadUrl: The URL to the Tailwind Standalone CLI. This property is optional, and defaults to downloading the specified version from GitHub. -->
 
   <!-- To override these properties, create a PropertyGroup in the csproj file -->
@@ -112,7 +113,10 @@
       <TailwindBuildCommand Condition="'$(TailwindMinifyOutputStyleSheet)' == 'true'">$(TailwindBuildCommand) --minify</TailwindBuildCommand>
 
       <!-- Add map flag if specified -->
-      <TailwindBuildCommand Condition="'$(TailwindGenerateSourceMap)' == 'true'">$(TailwindBuildCommand) --map</TailwindBuildCommand>
+      <TailwindBuildCommand Condition="'$(TailwindGenerateSourceMap)' == 'true' And '$(TailwindOutputSourceMapPath)' == ''">$(TailwindBuildCommand) --map</TailwindBuildCommand>
+      
+      <!-- Add map flag with output path if specified -->
+      <TailwindBuildCommand Condition="'$(TailwindGenerateSourceMap)' == 'true' And '$(TailwindOutputSourceMapPath)' != ''">$(TailwindBuildCommand) --map "$(TailwindOutputSourceMapPath)"</TailwindBuildCommand>
     </PropertyGroup>
 
     <Exec Command="$(TailwindBuildCommand)"/>
@@ -121,6 +125,7 @@
   <!-- Delete the output stylesheet when cleaning the project -->
   <Target Name="CleanTailwindOutput" AfterTargets="Clean">
     <Delete Files="$(TailwindOutputStyleSheetPath)" />
-    <Delete Files="$(TailwindOutputStyleSheetPath).map" />
+    <!-- Delete external source map file if specified -->
+    <Delete Files="$(TailwindOutputSourceMapPath)" Condition="'$(TailwindOutputSourceMapPath)' != ''" />
   </Target>
 </Project>
