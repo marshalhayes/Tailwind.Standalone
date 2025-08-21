@@ -33,4 +33,5 @@ You just have to specify the Tailwind version, and the input & output stylesheet
 - `TailwindOutputStyleSheetPath`: The path to the output stylesheet.
 - `TailwindOptimizeOutputStyleSheet`: Whether to optimize the output stylesheet. This property is optional, and defaults to false.
 - `TailwindMinifyOutputStyleSheet`: Whether to minify the output stylesheet. This property is optional, and defaults to false when Configuration is Debug, and true when Configuration is Release.
+- `TailwindGenerateSourceMap`: Whether to generate a source map for the output stylesheet. This property is optional, and defaults to true when Configuration is Debug, and false when Configuration is Release.
 - `TailwindDownloadUrl`: The URL to the Tailwind Standalone CLI. This property is optional, and defaults to downloading the specified version from GitHub.
