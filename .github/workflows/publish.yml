@@ -1,5 +1,8 @@
 name: Publish to NuGet
 
+permissions:
+  contents: write
+
 on:
   push:
     branches: [ main ]
@@ -14,8 +17,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v5
       - name: Pack
-        run: dotnet pack -c Release -o .
+        run: dotnet pack -c Release -o "${{ runner.temp }}"
+          $version = Select-Xml -Path "Tailwind.Standalone.csproj" -XPath "//Version" | ForEach-Object { $_.Node.'#text' }
+          if ([string]::IsNullOrWhiteSpace($version)) {
+            Write-Error "Version element not found in Tailwind.Standalone.csproj. Aborting publish."
+            exit 1
+          }
+          echo "VERSION=$version" >> $GITHUB_ENV
+        shell: powershell
       - name: Publish
-        run: dotnet nuget push "*.nupkg" --api-key "${{ secrets.NUGET_API_KEY }}" --source "https://api.nuget.org/v3/index.json"
+        run: dotnet nuget push "${{ runner.temp }}/*.nupkg" --api-key "${{ secrets.NUGET_API_KEY }}" --source "https://api.nuget.org/v3/index.json"
+      - name: Tag Version
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag "v${{ env.VERSION }}"
+          git push origin "v${{ env.VERSION }}"
