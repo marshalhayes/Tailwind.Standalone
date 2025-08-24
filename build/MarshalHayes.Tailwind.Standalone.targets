@@ -60,7 +60,10 @@
   <Target Name="DetectLddVersion" BeforeTargets="DownloadTailwind" Condition="$([System.OperatingSystem]::IsLinux())">
     <Exec Command="ldd --version"
           ConsoleToMsBuild="true"
-          EchoOff="true">
+          EchoOff="true"
+          IgnoreExitCode="true"
+          StandardOutputImportance="Low"
+          StandardErrorImportance="Low">
       <Output TaskParameter="ConsoleOutput" PropertyName="LddVersion" />
     </Exec>
 
