@@ -27,7 +27,7 @@ jobs:
             Write-Error "Version element not found in Tailwind.Standalone.csproj. Aborting publish."
             exit 1
           }
-          echo "VERSION=$version" >> $GITHUB_ENV
+          echo "VERSION=$version" >> $env:GITHUB_ENV
         shell: pwsh
       - name: Publish
         run: dotnet nuget push "${{ runner.temp }}/*.nupkg" --api-key "${{ secrets.NUGET_API_KEY }}" --source "https://api.nuget.org/v3/index.json"
