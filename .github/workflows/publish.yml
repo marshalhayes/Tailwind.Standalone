@@ -20,7 +20,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
       - name: Pack
-        run: dotnet pack -c Release -o "${{ runner.temp }}"
+        run: |
+          dotnet pack -c Release -o "${{ runner.temp }}"
           $version = Select-Xml -Path "Tailwind.Standalone.csproj" -XPath "//Version" | ForEach-Object { $_.Node.'#text' }
           if ([string]::IsNullOrWhiteSpace($version)) {
             Write-Error "Version element not found in Tailwind.Standalone.csproj. Aborting publish."
