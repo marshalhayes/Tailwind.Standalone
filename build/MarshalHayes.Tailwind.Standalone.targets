@@ -56,11 +56,30 @@
     <Watch Include="$(TailwindInputStyleSheetPath)"/>
   </ItemGroup>
 
+  <!-- Detect whether the system is using glibc or musl -->
+  <Target Name="DetectLddVersion" BeforeTargets="DownloadTailwind" Condition="$([System.OperatingSystem]::IsLinux())">
+    <Exec Command="ldd --version"
+          ConsoleToMsBuild="true"
+          EchoOff="true"
+          IgnoreExitCode="true"
+          StandardOutputImportance="Low"
+          StandardErrorImportance="Low">
+      <Output TaskParameter="ConsoleOutput" PropertyName="LddVersion" />
+    </Exec>
+
+    <PropertyGroup>
+      <IsMusl Condition="'$(LddVersion)' != '' And $(LddVersion.Contains('musl'))">true</IsMusl>
+    </PropertyGroup>
+  </Target>
+
   <Target Name="DownloadTailwind">
     <PropertyGroup>
       <!-- Determine which version of Tailwind to use based on the current OS & architecture -->
-      <TailwindReleaseName Condition="$([System.OperatingSystem]::IsLinux()) And $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == X64">tailwindcss-linux-x64</TailwindReleaseName>
-      <TailwindReleaseName Condition="$([System.OperatingSystem]::IsLinux()) And $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == Armv7">tailwindcss-linux-armv7</TailwindReleaseName>
+      <TailwindReleaseName Condition="$([System.OperatingSystem]::IsLinux()) And '$(IsMusl)' == '' And $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == X64">tailwindcss-linux-x64</TailwindReleaseName>
+      <TailwindReleaseName Condition="$([System.OperatingSystem]::IsLinux()) And '$(IsMusl)' == '' And $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == Arm64">tailwindcss-linux-arm64</TailwindReleaseName>
+
+      <TailwindReleaseName Condition="$([System.OperatingSystem]::IsLinux()) And '$(IsMusl)' == 'true' And $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == X64">tailwindcss-linux-x64-musl</TailwindReleaseName>
+      <TailwindReleaseName Condition="$([System.OperatingSystem]::IsLinux()) And '$(IsMusl)' == 'true' And $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == Arm64">tailwindcss-linux-arm64-musl</TailwindReleaseName>
 
       <TailwindReleaseName Condition="$([System.OperatingSystem]::IsMacOS()) And $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == X64">tailwindcss-macos-x64</TailwindReleaseName>
       <TailwindReleaseName Condition="$([System.OperatingSystem]::IsMacOS()) And $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == Arm64">tailwindcss-macos-arm64</TailwindReleaseName>
@@ -88,7 +107,9 @@
     </DownloadFile>
 
     <!-- On unix systems, make the file executable -->
-    <Exec Condition="Exists('$(TailwindCliPath)') And ($([System.OperatingSystem]::IsLinux()) Or $([System.OperatingSystem]::IsMacOS()))" Command="chmod +x '$(TailwindCliPath)'"/>
+    <Exec Condition="Exists('$(TailwindCliPath)') And ($([System.OperatingSystem]::IsLinux()) Or $([System.OperatingSystem]::IsMacOS()))"
+          Command="chmod +x '$(TailwindCliPath)'"
+          EchoOff="true"/>
   </Target>
 
   <!-- When building the project, run the Tailwind CLI -->
@@ -112,18 +133,20 @@
 
       <!-- Add map flag if specified -->
       <TailwindBuildCommand Condition="'$(TailwindGenerateSourceMap)' == 'true' And '$(TailwindOutputSourceMapPath)' == ''">$(TailwindBuildCommand) --map</TailwindBuildCommand>
-      
+
       <!-- Add map flag with output path if specified -->
       <TailwindBuildCommand Condition="'$(TailwindGenerateSourceMap)' == 'true' And '$(TailwindOutputSourceMapPath)' != ''">$(TailwindBuildCommand) --map "$(TailwindOutputSourceMapPath)"</TailwindBuildCommand>
     </PropertyGroup>
 
-    <Exec Command="$(TailwindBuildCommand)"/>
+    <Exec Command="$(TailwindBuildCommand)" EchoOff="true"/>
   </Target>
 
-  <!-- Delete the output stylesheet when cleaning the project -->
+  <!-- Delete the generated files when cleaning the project -->
   <Target Name="CleanTailwindOutput" AfterTargets="Clean">
-    <Delete Files="$(TailwindOutputStyleSheetPath)" />
+    <!-- Delete the output stylesheet -->
+    <Delete Files="$(TailwindOutputStyleSheetPath)"/>
+
     <!-- Delete external source map file if specified -->
-    <Delete Files="$(TailwindOutputSourceMapPath)" Condition="'$(TailwindOutputSourceMapPath)' != ''" />
+    <Delete Files="$(TailwindOutputSourceMapPath)" Condition="'$(TailwindOutputSourceMapPath)' != ''"/>
   </Target>
 </Project>

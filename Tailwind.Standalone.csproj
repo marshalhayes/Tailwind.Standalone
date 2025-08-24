@@ -10,7 +10,7 @@
 
     <Authors>Marshal Hayes</Authors>
     <PackageId>MarshalHayes.Tailwind.Standalone</PackageId>
-    <Version>1.1.0</Version>
+    <Version>1.2.0</Version>
     <Description>Use the Tailwind Standalone CLI the right way</Description>
     
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
@@ -26,6 +26,10 @@
     <None Include="LICENSE" Pack="true" PackagePath="\"/>
     <None Include="README.md" Pack="true" PackagePath="\"/>
     <None Include="build\**" Pack="true" PackagePath="build" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include=".github\workflows\publish.yml" Pack="false" />
   </ItemGroup>
   
 </Project>
